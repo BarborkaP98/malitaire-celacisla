@@ -56,11 +56,23 @@ if (typ === 1) {
 }
 
   // násobení malé (aby bylo realistické)
-  let a = rand(-10, 10);
+let a, b;
+
+// 🔁 najdi správnou kombinaci
+do {
+  a = rand(-10, 10);
   if (a === 0) a = 1;
 
-  let b = Math.round(vysledek / a);
-  return `${a} × ${b}`;
+  if (vysledek % a !== 0) {
+    b = null;
+  } else {
+    b = vysledek / a;
+  }
+
+} while (b === null);
+
+return `${a} × ${b}`;
+
 }
 
 // ✅ GENERUJ BALÍČEK
