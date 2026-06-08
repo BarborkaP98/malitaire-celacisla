@@ -1,14 +1,25 @@
-
 let balicek = [];
 let vybranaKarta = null;
 let tazenaKarta = null;
 
-// ✅ NÁHODNÁ ČÍSLA (-100 až 100)
+// ✅ pomocné funkce
+
 function rand(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-// ✅ VYGENERUJ CÍLE
+// 🔹 dlouhé minus
+function minus(n) {
+  return n < 0 ? "−" + Math.abs(n) : n;
+}
+
+// 🔹 závorky pro záporná čísla
+function zapis(n) {
+  if (n < 0) return "(" + minus(n) + ")";
+  return n;
+}
+
+// ✅ generuj cíle
 function generujCile() {
   let cile = [];
 
@@ -20,62 +31,54 @@ function generujCile() {
   return cile;
 }
 
-// ✅ VYTVOŘ PŘÍKLAD
+// ✅ vytvoř příklad
 function vytvorPriklad(vysledek) {
 
   let typ = rand(0, 2);
 
+  // ✅ SČÍTÁNÍ
   if (typ === 0) {
     let a = rand(-50, 50);
     let b = vysledek - a;
-    return `${a} + ${b}`;
+    return `${minus(a)} + ${minus(b)}`;
   }
 
-function minus(n) {
-  return n < 0 ? "−" + Math.abs(n) : n;
-}
+  // ✅ ODČÍTÁNÍ (opravené!!)
+  if (typ === 1) {
+    let b = rand(-50, 50);
+    let a = vysledek + b;
 
-if (typ === 1) {
-  let b = rand(-50, 50);
-  let a = vysledek + b;
-
-  if (b < 0) {
-
-    // ✅ náhodně vyber variantu
-    if (Math.random() < 0.5) {
-      // varianta bez závorek
-      return `${minus(a)} + ${Math.abs(b)}`;
+    if (b < 0) {
+      // náhodně varianta
+      if (Math.random() < 0.5) {
+        return `${minus(a)} + ${Math.abs(b)}`;
+      } else {
+        return `${minus(a)} − (${minus(b)})`;
+      }
     } else {
-      // varianta se závorkami
-      return `${minus(a)} − (${minus(b)})`;
+      return `${minus(a)} − ${b}`;
+    }
+  }
+
+  // ✅ NÁSOBENÍ (bez chyb!!)
+  let a, b;
+
+  do {
+    a = rand(-10, 10);
+    if (a === 0) a = 1;
+
+    if (vysledek % a === 0) {
+      b = vysledek / a;
+    } else {
+      b = null;
     }
 
-  } else {
-    return `${minus(a)} − ${b}`;
-  }
+  } while (b === null);
+
+  return `${zapis(a)} × ${zapis(b)}`;
 }
 
-  // násobení malé (aby bylo realistické)
-let a, b;
-
-// 🔁 najdi správnou kombinaci
-do {
-  a = rand(-10, 10);
-  if (a === 0) a = 1;
-
-  if (vysledek % a !== 0) {
-    b = null;
-  } else {
-    b = vysledek / a;
-  }
-
-} while (b === null);
-
-return `${a} × ${b}`;
-
-}
-
-// ✅ GENERUJ BALÍČEK
+// ✅ generuj balíček
 function generuj() {
   balicek = [];
 
@@ -97,7 +100,7 @@ function generuj() {
   balicek.sort(() => Math.random() - 0.5);
 }
 
-// ✅ KARTA
+// ✅ karta
 function vytvorKartu(text, vysledek) {
   let karta = document.createElement("div");
   karta.className = "karta";
@@ -106,9 +109,7 @@ function vytvorKartu(text, vysledek) {
   karta.draggable = true;
 
   karta.addEventListener("click", () => {
-
     document.querySelectorAll(".karta").forEach(k => k.style.border = "none");
-
     karta.style.border = "2px solid red";
     vybranaKarta = karta;
   });
@@ -120,7 +121,7 @@ function vytvorKartu(text, vysledek) {
   return karta;
 }
 
-// ✅ LÍZNI
+// ✅ lízni
 function lizniKartu() {
   let zona = document.getElementById("aktualni-karta");
 
@@ -135,7 +136,7 @@ function lizniKartu() {
   zona.appendChild(vytvorKartu(k.text, k.vysledek));
 }
 
-// ✅ PŘESUN
+// ✅ přesun
 function presun(sloupec, karta) {
 
   let puvodni = karta.parentElement;
@@ -163,7 +164,7 @@ function presun(sloupec, karta) {
   document.getElementById("aktualni-karta").innerHTML = "";
 }
 
-// ✅ INIT
+// ✅ init
 document.addEventListener("DOMContentLoaded", () => {
 
   document.querySelectorAll(".sloupec").forEach(sloupec => {
@@ -186,7 +187,7 @@ document.addEventListener("DOMContentLoaded", () => {
   generuj();
 });
 
-// ✅ KONTROLA
+// ✅ kontrola
 function zkontroluj() {
   document.querySelectorAll(".sloupec").forEach(sloupec => {
 
@@ -205,12 +206,12 @@ function zkontroluj() {
     });
 
     sloupec.style.background =
-      ok && karty.length === 4 ? "green" :
-      ok ? "orange" : "red";
+      ok && karty.length === 4 ? "#66bb6a" :
+      ok ? "#ffe082" : "#ffcdd2";
   });
 }
 
-// ✅ NOVÁ HRA
+// ✅ nová hra
 function novaHra() {
   document.querySelectorAll(".sloupec").forEach(s => {
     s.innerHTML = "";
