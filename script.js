@@ -2,38 +2,36 @@ let balicek = [];
 let vybranaKarta = null;
 let tazenaKarta = null;
 
-// ✅ náhodné číslo
+let uroven = 1; // ✅ 1 = + -, 2 = vše
+
 function rand(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-// ✅ dlouhé mínus
 function minus(n) {
   return n < 0 ? "−" + Math.abs(n) : n;
 }
 
-// ✅ závorky pro záporná čísla
 function zapis(n) {
   if (n < 0) return "(" + minus(n) + ")";
   return n;
 }
 
-// ✅ cílová čísla
+// ✅ cíle
 function generujCile() {
   let cile = [];
-
   while (cile.length < 5) {
     let n = rand(-100, 100);
     if (!cile.includes(n)) cile.push(n);
   }
-
   return cile;
 }
 
-// ✅ vytvoření příkladu (FINÁLNÍ VERZE)
+// ✅ příklady podle úrovně
 function vytvorPriklad(vysledek) {
 
-  let typ = rand(0, 2);
+  let maxTyp = uroven === 1 ? 1 : 3;
+  let typ = rand(0, maxTyp);
 
   // ✅ SČÍTÁNÍ
   if (typ === 0) {
@@ -68,24 +66,35 @@ function vytvorPriklad(vysledek) {
   }
 
   // ✅ NÁSOBENÍ
-  let a, b;
+  if (typ === 2) {
+    let a, b;
+    do {
+      a = rand(-10, 10);
+      if (a === 0) a = 1;
 
-  do {
-    a = rand(-10, 10);
-    if (a === 0) a = 1;
+      if (vysledek % a === 0) {
+        b = vysledek / a;
+      } else {
+        b = null;
+      }
 
-    if (vysledek % a === 0) {
-      b = vysledek / a;
-    } else {
-      b = null;
-    }
+    } while (b === null);
 
-  } while (b === null);
+    return `${zapis(a)} × ${zapis(b)}`;
+  }
 
-  return `${zapis(a)} × ${zapis(b)}`;
+  // ✅ DĚLENÍ
+  if (typ === 3) {
+    let b = rand(-10, 10);
+    if (b === 0) b = 1;
+
+    let a = vysledek * b;
+
+    return `${zapis(a)} ÷ ${zapis(b)}`;
+  }
 }
 
-// ✅ generování balíčku
+// ✅ balíček
 function generuj() {
   balicek = [];
 
@@ -119,8 +128,8 @@ function vytvorKartu(text, vysledek) {
     e.stopPropagation();
 
     document.querySelectorAll(".karta").forEach(k => k.style.border = "none");
-
     karta.style.border = "2px solid red";
+
     vybranaKarta = karta;
   });
 
@@ -131,7 +140,7 @@ function vytvorKartu(text, vysledek) {
   return karta;
 }
 
-// ✅ lízni kartu
+// ✅ lízni
 function lizniKartu() {
   let zona = document.getElementById("aktualni-karta");
 
@@ -174,30 +183,23 @@ function presun(sloupec, karta) {
   document.getElementById("aktualni-karta").innerHTML = "";
 }
 
-// ✅ inicializace
+// ✅ init
 document.addEventListener("DOMContentLoaded", () => {
 
   document.querySelectorAll(".sloupec").forEach(sloupec => {
 
-    // ✅ klik (mobil + PC)
     sloupec.addEventListener("click", (e) => {
       e.preventDefault();
-
       if (!vybranaKarta) return;
-
       presun(sloupec, vybranaKarta);
     });
 
-    // ✅ mobil fallback
     sloupec.addEventListener("touchstart", (e) => {
       e.preventDefault();
-
       if (!vybranaKarta) return;
-
       presun(sloupec, vybranaKarta);
     });
 
-    // ✅ drag
     sloupec.addEventListener("dragover", e => e.preventDefault());
 
     sloupec.addEventListener("drop", e => {
@@ -205,7 +207,6 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!tazenaKarta) return;
       presun(sloupec, tazenaKarta);
     });
-
   });
 
   generuj();
@@ -243,7 +244,11 @@ function novaHra() {
   });
 
   document.getElementById("aktualni-karta").innerHTML = "";
-
   generuj();
 }
 
+// ✅ změna úrovně
+function nastavUroven(u) {
+  uroven = u;
+  novaHra();
+}
