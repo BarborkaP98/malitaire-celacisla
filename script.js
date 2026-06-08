@@ -194,11 +194,7 @@ document.addEventListener("DOMContentLoaded", () => {
       presun(sloupec, vybranaKarta);
     });
 
-    sloupec.addEventListener("touchstart", (e) => {
-      e.preventDefault();
-      if (!vybranaKarta) return;
-      presun(sloupec, vybranaKarta);
-    });
+  
 
     sloupec.addEventListener("dragover", e => e.preventDefault());
 
