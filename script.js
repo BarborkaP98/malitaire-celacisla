@@ -31,11 +31,29 @@ function vytvorPriklad(vysledek) {
     return `${a} + ${b}`;
   }
 
-  if (typ === 1) {
-    let b = rand(-50, 50);
-    let a = vysledek + b;
-    return `${a} - ${b}`;
+function minus(n) {
+  return n < 0 ? "−" + Math.abs(n) : n;
+}
+
+if (typ === 1) {
+  let b = rand(-50, 50);
+  let a = vysledek + b;
+
+  if (b < 0) {
+
+    // ✅ náhodně vyber variantu
+    if (Math.random() < 0.5) {
+      // varianta bez závorek
+      return `${minus(a)} + ${Math.abs(b)}`;
+    } else {
+      // varianta se závorkami
+      return `${minus(a)} − (${minus(b)})`;
+    }
+
+  } else {
+    return `${minus(a)} − ${b}`;
   }
+}
 
   // násobení malé (aby bylo realistické)
   let a = rand(-10, 10);
