@@ -2,13 +2,12 @@ let balicek = [];
 let vybranaKarta = null;
 let tazenaKarta = null;
 
-// ✅ pomocné funkce
-
+// ✅ náhodné číslo
 function rand(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-// ✅ dlouhé minus
+// ✅ dlouhé mínus
 function minus(n) {
   return n < 0 ? "−" + Math.abs(n) : n;
 }
@@ -31,18 +30,28 @@ function generujCile() {
   return cile;
 }
 
-// ✅ tvorba příkladů
+// ✅ vytvoření příkladu (FINÁLNÍ VERZE)
 function vytvorPriklad(vysledek) {
+
   let typ = rand(0, 2);
 
-  // 🟢 SČÍTÁNÍ
+  // ✅ SČÍTÁNÍ
   if (typ === 0) {
     let a = rand(-50, 50);
     let b = vysledek - a;
-    return `${minus(a)} + ${minus(b)}`;
+
+    if (b < 0) {
+      if (Math.random() < 0.5) {
+        return `${minus(a)} + (${minus(b)})`;
+      } else {
+        return `${minus(a)} − ${Math.abs(b)}`;
+      }
+    } else {
+      return `${minus(a)} + ${b}`;
+    }
   }
 
-  // 🟣 ODČÍTÁNÍ (bez dvojitých znamének)
+  // ✅ ODČÍTÁNÍ
   if (typ === 1) {
     let b = rand(-50, 50);
     let a = vysledek + b;
@@ -58,7 +67,7 @@ function vytvorPriklad(vysledek) {
     }
   }
 
-  // 🔵 NÁSOBENÍ (100% správné)
+  // ✅ NÁSOBENÍ
   let a, b;
 
   do {
@@ -106,19 +115,15 @@ function vytvorKartu(text, vysledek) {
   karta.dataset.v = vysledek;
   karta.draggable = true;
 
-  // ✅ klik (mobil + PC)
   karta.addEventListener("click", (e) => {
-
-    e.stopPropagation(); // 🔥 KLÍČ
+    e.stopPropagation();
 
     document.querySelectorAll(".karta").forEach(k => k.style.border = "none");
 
     karta.style.border = "2px solid red";
-
     vybranaKarta = karta;
   });
 
-  // ✅ drag (PC)
   karta.addEventListener("dragstart", () => {
     tazenaKarta = karta;
   });
@@ -126,7 +131,7 @@ function vytvorKartu(text, vysledek) {
   return karta;
 }
 
-// ✅ lízání
+// ✅ lízni kartu
 function lizniKartu() {
   let zona = document.getElementById("aktualni-karta");
 
@@ -141,7 +146,7 @@ function lizniKartu() {
   zona.appendChild(vytvorKartu(k.text, k.vysledek));
 }
 
-// ✅ přesun (funguje všude)
+// ✅ přesun
 function presun(sloupec, karta) {
 
   let puvodni = karta.parentElement;
@@ -156,7 +161,7 @@ function presun(sloupec, karta) {
 
   if (sloupec.querySelectorAll(".karta").length === 0) {
     let nadpis = document.createElement("div");
-    nadpis.innerText = karta.dataset.v;
+    nadpis.innerText = minus(Number(karta.dataset.v));
     nadpis.style.fontWeight = "bold";
     sloupec.appendChild(nadpis);
   }
@@ -169,7 +174,7 @@ function presun(sloupec, karta) {
   document.getElementById("aktualni-karta").innerHTML = "";
 }
 
-// ✅ start
+// ✅ inicializace
 document.addEventListener("DOMContentLoaded", () => {
 
   document.querySelectorAll(".sloupec").forEach(sloupec => {
@@ -192,7 +197,7 @@ document.addEventListener("DOMContentLoaded", () => {
       presun(sloupec, vybranaKarta);
     });
 
-    // ✅ drag PC
+    // ✅ drag
     sloupec.addEventListener("dragover", e => e.preventDefault());
 
     sloupec.addEventListener("drop", e => {
@@ -238,5 +243,7 @@ function novaHra() {
   });
 
   document.getElementById("aktualni-karta").innerHTML = "";
+
   generuj();
 }
+
