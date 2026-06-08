@@ -8,18 +8,18 @@ function rand(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-// 🔹 dlouhé minus
+// ✅ dlouhé minus
 function minus(n) {
   return n < 0 ? "−" + Math.abs(n) : n;
 }
 
-// 🔹 závorky pro záporná čísla
+// ✅ závorky pro záporná čísla
 function zapis(n) {
   if (n < 0) return "(" + minus(n) + ")";
   return n;
 }
 
-// ✅ generuj cíle
+// ✅ cílová čísla
 function generujCile() {
   let cile = [];
 
@@ -31,25 +31,23 @@ function generujCile() {
   return cile;
 }
 
-// ✅ vytvoř příklad
+// ✅ tvorba příkladů
 function vytvorPriklad(vysledek) {
-
   let typ = rand(0, 2);
 
-  // ✅ SČÍTÁNÍ
+  // 🟢 SČÍTÁNÍ
   if (typ === 0) {
     let a = rand(-50, 50);
     let b = vysledek - a;
     return `${minus(a)} + ${minus(b)}`;
   }
 
-  // ✅ ODČÍTÁNÍ (opravené!!)
+  // 🟣 ODČÍTÁNÍ (bez dvojitých znamének)
   if (typ === 1) {
     let b = rand(-50, 50);
     let a = vysledek + b;
 
     if (b < 0) {
-      // náhodně varianta
       if (Math.random() < 0.5) {
         return `${minus(a)} + ${Math.abs(b)}`;
       } else {
@@ -60,7 +58,7 @@ function vytvorPriklad(vysledek) {
     }
   }
 
-  // ✅ NÁSOBENÍ (bez chyb!!)
+  // 🔵 NÁSOBENÍ (100% správné)
   let a, b;
 
   do {
@@ -78,7 +76,7 @@ function vytvorPriklad(vysledek) {
   return `${zapis(a)} × ${zapis(b)}`;
 }
 
-// ✅ generuj balíček
+// ✅ generování balíčku
 function generuj() {
   balicek = [];
 
@@ -108,12 +106,19 @@ function vytvorKartu(text, vysledek) {
   karta.dataset.v = vysledek;
   karta.draggable = true;
 
-  karta.addEventListener("click", () => {
+  // ✅ klik (mobil + PC)
+  karta.addEventListener("click", (e) => {
+
+    e.stopPropagation(); // 🔥 KLÍČ
+
     document.querySelectorAll(".karta").forEach(k => k.style.border = "none");
+
     karta.style.border = "2px solid red";
+
     vybranaKarta = karta;
   });
 
+  // ✅ drag (PC)
   karta.addEventListener("dragstart", () => {
     tazenaKarta = karta;
   });
@@ -121,7 +126,7 @@ function vytvorKartu(text, vysledek) {
   return karta;
 }
 
-// ✅ lízni
+// ✅ lízání
 function lizniKartu() {
   let zona = document.getElementById("aktualni-karta");
 
@@ -136,7 +141,7 @@ function lizniKartu() {
   zona.appendChild(vytvorKartu(k.text, k.vysledek));
 }
 
-// ✅ přesun
+// ✅ přesun (funguje všude)
 function presun(sloupec, karta) {
 
   let puvodni = karta.parentElement;
@@ -164,16 +169,30 @@ function presun(sloupec, karta) {
   document.getElementById("aktualni-karta").innerHTML = "";
 }
 
-// ✅ init
+// ✅ start
 document.addEventListener("DOMContentLoaded", () => {
 
   document.querySelectorAll(".sloupec").forEach(sloupec => {
 
-    sloupec.addEventListener("click", () => {
+    // ✅ klik (mobil + PC)
+    sloupec.addEventListener("click", (e) => {
+      e.preventDefault();
+
       if (!vybranaKarta) return;
+
       presun(sloupec, vybranaKarta);
     });
 
+    // ✅ mobil fallback
+    sloupec.addEventListener("touchstart", (e) => {
+      e.preventDefault();
+
+      if (!vybranaKarta) return;
+
+      presun(sloupec, vybranaKarta);
+    });
+
+    // ✅ drag PC
     sloupec.addEventListener("dragover", e => e.preventDefault());
 
     sloupec.addEventListener("drop", e => {
@@ -194,7 +213,7 @@ function zkontroluj() {
     let karty = sloupec.querySelectorAll(".karta");
 
     if (karty.length === 0) {
-      sloupec.style.background = "red";
+      sloupec.style.background = "#ffcdd2";
       return;
     }
 
